@@ -1,9 +1,11 @@
+import { RefreshProvider } from './context/RefreshContext';
+import RefreshButton from './components/RefreshButton';
 import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Sandhya Thapa | Civil Engineering Portfolio',
-  description: 'Civil Engineering Student Portfolio showcasing projects and skills',
+  description: 'Portfolio website showcasing civil engineering projects and skills',
 };
 
 export default function RootLayout({
@@ -17,12 +19,14 @@ export default function RootLayout({
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <RefreshProvider>
+          {children}
+          <RefreshButton />
+        </RefreshProvider>
+      </body>
     </html>
   );
 } 

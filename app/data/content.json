@@ -1,0 +1,180 @@
+{
+  "hero": {
+    "title": {
+      "part1": "Building Dreams",
+      "part2": "Fyi with eyes closed 24/7"
+    },
+    "description": "Hi, I'm Sandhya Thapa, a passionate civil engineering student dedicated to creating sustainable and innovative infrastructure solutions.",
+    "cta": {
+      "primary": {
+        "0": "V",
+        "1": "i",
+        "2": "e",
+        "3": "w",
+        "4": " ",
+        "5": "P",
+        "6": "r",
+        "7": "o",
+        "8": "j",
+        "9": "e",
+        "10": "c",
+        "11": "t",
+        "12": "s",
+        "text": "View My Work",
+        "link": "#projects"
+      },
+      "secondary": {
+        "0": "C",
+        "1": "o",
+        "2": "n",
+        "3": "t",
+        "4": "a",
+        "5": "c",
+        "6": "t",
+        "7": " ",
+        "8": "M",
+        "9": "e",
+        "text": "Contact Me",
+        "link": "#contact"
+      }
+    },
+    "image": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+  },
+  "about": {
+    "title": "About Me",
+    "subtitle": "Civil Engineering Student | Sustainable Design Enthusiast",
+    "content": "I'm currently pursuing my Bachelor's degree in Civil Engineering at Pokhara University, with a passion for sustainable infrastructure and innovative design solutions.\n\nMy journey in civil engineering began when I was fascinated by the blend of creativity and technical precision required to shape our built environment. I believe in designing structures that not only stand the test of time but also harmonize with nature and serve communities effectively.",
+    "image": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    "education": "Pokhara University",
+    "location": "Pokhara, Kaski",
+    "interests": "Sustainable Design, Urban Planning, Green Infrastructure",
+    "experience": "0+ Years"
+  },
+  "skills": {
+    "title": "My Skills",
+    "skillCategories": [
+      {
+        "name": "Structural Design",
+        "icon": "fas fa-drafting-compass",
+        "color": "text-purple-600"
+      },
+      {
+        "name": "Sustainable Design",
+        "icon": "fas fa-leaf",
+        "color": "text-purple-600"
+      },
+      {
+        "name": "3D Modeling",
+        "icon": "fas fa-cube",
+        "color": "text-purple-600"
+      },
+      {
+        "name": "Structural Analysis",
+        "icon": "fas fa-chart-line",
+        "color": "text-purple-600"
+      }
+    ],
+    "technicalProficiencies": {
+      "title": "Technical Proficiencies",
+      "categories": [
+        {
+          "name": "Design Software",
+          "icon": "fas fa-pencil-ruler",
+          "skills": [
+            {
+              "name": "AutoCAD",
+              "percentage": 85
+            },
+            {
+              "name": "Revit",
+              "percentage": 80
+            },
+            {
+              "name": "SketchUp",
+              "percentage": 75
+            }
+          ]
+        },
+        {
+          "name": "Analysis Tools",
+          "icon": "fas fa-chart-line",
+          "skills": [
+            {
+              "name": "ETABS",
+              "percentage": 90
+            },
+            {
+              "name": "SAP2000",
+              "percentage": 85
+            },
+            {
+              "name": "STAAD.Pro",
+              "percentage": 80
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Let's Build Something Together",
+    "description": "Whether you have a project in mind or just want to chat about civil engineering, I'd love to hear from you!",
+    "contactItems": [
+      {
+        "icon": "fas fa-envelope",
+        "label": "Email",
+        "value": "bimal.chhetry122@gmail.com"
+      },
+      {
+        "icon": "fas fa-phone-alt",
+        "label": "Phone",
+        "value": "+977-9825171228"
+      },
+      {
+        "icon": "fas fa-map-marker-alt",
+        "label": "Location",
+        "value": "Pokhara 17 kaski, Nepal"
+      }
+    ],
+    "socialLinks": [
+      {
+        "name": "GitHub",
+        "icon": "fab fa-github",
+        "url": "https://github.com/ghoseyy",
+        "color": "bg-gray-800"
+      },
+      {
+        "name": "LinkedIn",
+        "icon": "fab fa-linkedin-in",
+        "url": "https://linkedin.com/in/bimql",
+        "color": "bg-black"
+      }
+    ]
+  },
+  "footer": {
+    "title": "Sandhya Thapa",
+    "subtitle": "Civil Engineering Student",
+    "social": {
+      "linkedin": "https://linkedin.com/in/",
+      "github": "https://github.com/",
+      "instagram": "https://instagram.com/",
+      "twitter": "https://twitter.com/"
+    },
+    "bottomLinks": [
+      {
+        "label": "Privacy Policy",
+        "url": "/privacy"
+      },
+      {
+        "label": "Terms of Service",
+        "url": "/terms"
+      },
+      {
+        "label": "Sitemap",
+        "url": "/sitemap"
+      }
+    ],
+    "copyright": "© 2025 Sandhya Thapa. All rights reserved."
+  }
+}
