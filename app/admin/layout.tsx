@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function AdminLayout({
   children,
@@ -13,6 +13,7 @@ export default function AdminLayout({
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +39,14 @@ export default function AdminLayout({
       setError('An error occurred. Please try again.');
     }
   };
+
+  const navItems = [
+    { href: '/admin', label: 'Dashboard' },
+    { href: '/admin/projects', label: 'Projects' },
+    { href: '/admin/theme', label: 'Theme' },
+    { href: '/admin/navbar', label: 'Navbar' },
+    { href: '/admin/content', label: 'Content' }
+  ];
 
   if (!isAuthenticated) {
     return (
@@ -84,18 +93,19 @@ export default function AdminLayout({
                 <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Link href="/admin" className="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-purple-500">
-                  Dashboard
-                </Link>
-                <Link href="/admin/projects" className="text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent">
-                  Projects
-                </Link>
-                <Link href="/admin/theme" className="text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent">
-                  Theme
-                </Link>
-                <Link href="/admin/content" className="text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent">
-                  Content
-                </Link>
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                      pathname === item.href
+                        ? 'border-purple-500 text-gray-900'
+                        : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
             </div>
             <div className="flex items-center">

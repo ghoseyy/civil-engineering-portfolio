@@ -43,12 +43,16 @@
   "about": {
     "title": "About Me",
     "subtitle": "Civil Engineering Student | Sustainable Design Enthusiast",
-    "content": "I'm currently pursuing my Bachelor's degree in Civil Engineering at Pokhara University, with a passion for sustainable infrastructure and innovative design solutions.\n\nMy journey in civil engineering began when I was fascinated by the blend of creativity and technical precision required to shape our built environment. I believe in designing structures that not only stand the test of time but also harmonize with nature and serve communities effectively.",
+    "content": "I'm currently pursuing my Bachelor's degree in Civil Engineering at Pokhara University, with a passion for sustainable infrastructure and innovative design solutions.\n\nMy journey in civil engineering began when I was fascinated by the blend of creativity and technical precision required to shape our built environment. I believe in designing structures that not only stand the test of time but also harmonize with nature and serve communities effectively.\n",
     "image": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     "education": "Pokhara University",
     "location": "Pokhara, Kaski",
-    "interests": "Sustainable Design, Urban Planning, Green Infrastructure",
-    "experience": "0+ Years"
+    "interests": "Sustainable Design",
+    "experience": "1+ Years",
+    "name": "Sandhya Thapa",
+    "iconStyles": {
+      "backgroundOpacity": 20
+    }
   },
   "skills": {
     "title": "My Skills",
@@ -101,15 +105,15 @@
           "skills": [
             {
               "name": "ETABS",
-              "percentage": 90
+              "percentage": 70
             },
             {
               "name": "SAP2000",
-              "percentage": 85
+              "percentage": 69
             },
             {
               "name": "STAAD.Pro",
-              "percentage": 80
+              "percentage": 100
             }
           ]
         }
@@ -124,7 +128,7 @@
       {
         "icon": "fas fa-envelope",
         "label": "Email",
-        "value": "bimal.chhetry122@gmail.com"
+        "value": "sandhya122@gmail.com"
       },
       {
         "icon": "fas fa-phone-alt",
@@ -141,13 +145,13 @@
       {
         "name": "GitHub",
         "icon": "fab fa-github",
-        "url": "https://github.com/ghoseyy",
+        "url": "https://github.com/",
         "color": "bg-gray-800"
       },
       {
         "name": "LinkedIn",
         "icon": "fab fa-linkedin-in",
-        "url": "https://linkedin.com/in/bimql",
+        "url": "https://linkedin.com/in/",
         "color": "bg-black"
       }
     ]
@@ -176,5 +180,11 @@
       }
     ],
     "copyright": "© 2025 Sandhya Thapa. All rights reserved."
+  },
+  "projects": {
+    "tagStyles": {
+      "backgroundOpacity": 20,
+      "textColor": "var(--color-primary)"
+    }
   }
 }

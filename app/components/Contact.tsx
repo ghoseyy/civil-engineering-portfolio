@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRefresh } from '../context/RefreshContext';
 
 interface ContactItem {
   icon: string;
@@ -19,6 +20,9 @@ interface ContactContent {
   title: string;
   subtitle: string;
   description: string;
+  email: string;
+  phone: string;
+  location: string;
   contactItems: ContactItem[];
   socialLinks: SocialLink[];
 }
@@ -26,6 +30,7 @@ interface ContactContent {
 export default function Contact() {
   const [content, setContent] = useState<ContactContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { refreshKey } = useRefresh();
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -44,7 +49,7 @@ export default function Contact() {
     };
 
     fetchContent();
-  }, []);
+  }, [refreshKey]);
 
   if (isLoading || !content) {
     return (

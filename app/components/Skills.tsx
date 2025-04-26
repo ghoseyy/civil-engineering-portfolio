@@ -55,7 +55,7 @@ export default function Skills() {
 
   if (isLoading || !content) {
     return (
-      <section id="skills" className="py-20 bg-white">
+      <section id="skills" className="py-20 bg-[var(--color-light-bg)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">Loading...</div>
         </div>
@@ -64,21 +64,21 @@ export default function Skills() {
   }
 
   return (
-    <section id="skills" className="py-20 bg-white">
+    <section id="skills" className="py-20 bg-[var(--color-light-bg)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">{content.title}</h2>
-          <div className="w-20 h-1 bg-purple-600 mx-auto"></div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.title}</h2>
+          <div className="w-20 h-1 bg-theme-primary mx-auto"></div>
         </div>
 
         {/* Skill Categories */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
           {content.skillCategories.map((category, index) => (
             <div key={index} className="text-center">
-              <div className="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 group">
+              <div className="w-32 h-32 mx-auto bg-[var(--color-background)] rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 group">
                 <div className="text-center p-4">
-                  <i className={`${category.icon} ${category.color} text-3xl mb-2 group-hover:scale-110 transition-transform`}></i>
-                  <h3 className="text-sm font-semibold text-gray-800 mt-2">{category.name}</h3>
+                  <i className={`${category.icon} text-theme-primary text-3xl mb-2 group-hover:scale-110 transition-transform`}></i>
+                  <h3 className="text-sm font-semibold mt-2">{category.name}</h3>
                 </div>
               </div>
             </div>
@@ -86,27 +86,27 @@ export default function Skills() {
         </div>
 
         {/* Technical Proficiencies */}
-        <div className="bg-gray-50 rounded-xl p-8 mt-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-8 pl-4">
+        <div className="bg-[var(--color-background)] rounded-xl p-8 mt-12">
+          <h3 className="text-2xl font-bold mb-8 pl-4">
             {content.technicalProficiencies.title}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {content.technicalProficiencies.categories.map((category, index) => (
               <div key={index} className="space-y-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <i className={category.icon + " text-purple-600 text-2xl"}></i>
-                  <h3 className="text-xl font-semibold text-gray-800">{category.name}</h3>
+                  <i className={category.icon + " text-theme-primary text-2xl"}></i>
+                  <h3 className="text-xl font-semibold">{category.name}</h3>
                 </div>
                 <div className="space-y-4">
                   {category.skills.map((skill, skillIndex) => (
                     <div key={skillIndex} className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-600 font-medium">{skill.name}</span>
+                        <span className="text-[var(--color-text)] font-medium">{skill.name}</span>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-gray-500">{skill.percentage}%</span>
-                          <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <span className="text-sm text-[var(--color-text)] opacity-75">{skill.percentage}%</span>
+                          <div className="w-48 h-2 bg-[var(--color-light-bg)] rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-purple-600 rounded-full transition-all duration-300"
+                              className="h-full bg-theme-primary rounded-full transition-all duration-300"
                               style={{
                                 width: `${skill.percentage}%`
                               }}

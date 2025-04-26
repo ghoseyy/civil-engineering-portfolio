@@ -1,214 +1,410 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
-interface Theme {
+interface ColorPalette {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  text: string;
+  lightBg: string;
+}
+
+interface ThemeSection {
+  id: string;
+  label: string;
+  useGlobalColors: boolean;
   colors: {
-    primary: string;
-    secondary: string;
     background: string;
     text: string;
     accent: string;
   };
-  fonts: {
-    heading: string;
-    body: string;
-  };
-  icons: {
-    arrow: string;
-    email: string;
-    phone: string;
-    location: string;
-    github: string;
-    linkedin: string;
-  };
 }
 
-export default function ThemeAdmin() {
-  const [theme, setTheme] = useState<Theme | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+export default function ThemeCustomization() {
+  const { colors: currentColors, name, updateTheme } = useTheme();
+  
+  // Global color palette
+  const [globalColors, setGlobalColors] = useState<ColorPalette>({
+    primary: currentColors.primary,
+    secondary: currentColors.secondary,
+    accent: currentColors.accent,
+    background: '#ffffff',
+    text: '#1f2937',
+    lightBg: '#f9fafb'
+  });
 
-  useEffect(() => {
-    const fetchTheme = async () => {
-      try {
-        const response = await fetch('/api/theme');
-        if (!response.ok) {
-          throw new Error('Failed to fetch theme');
-        }
-        const data = await response.json();
-        setTheme(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load theme. Please try again later.');
-        console.error('Error fetching theme:', err);
-      } finally {
-        setIsLoading(false);
+  const [sections, setSections] = useState<ThemeSection[]>([
+    {
+      id: 'hero',
+      label: 'Hero Section',
+      useGlobalColors: true,
+      colors: {
+        background: '#ffffff',
+        text: '#1f2937',
+        accent: '#7c3aed'
       }
-    };
+    },
+    {
+      id: 'about',
+      label: 'About Section',
+      useGlobalColors: true,
+      colors: {
+        background: '#f9fafb',
+        text: '#1f2937',
+        accent: '#7c3aed'
+      }
+    },
+    {
+      id: 'projects',
+      label: 'Projects Section',
+      useGlobalColors: true,
+      colors: {
+        background: '#ffffff',
+        text: '#1f2937',
+        accent: '#7c3aed'
+      }
+    },
+    {
+      id: 'skills',
+      label: 'Skills Section',
+      useGlobalColors: true,
+      colors: {
+        background: '#f9fafb',
+        text: '#1f2937',
+        accent: '#7c3aed'
+      }
+    },
+    {
+      id: 'contact',
+      label: 'Contact Section',
+      useGlobalColors: true,
+      colors: {
+        background: '#ffffff',
+        text: '#1f2937',
+        accent: '#7c3aed'
+      }
+    }
+  ]);
 
-    fetchTheme();
+  // Load saved theme
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      try {
+        const parsedTheme = JSON.parse(savedTheme);
+        if (parsedTheme.colors) {
+          setGlobalColors({
+            ...globalColors,
+            primary: parsedTheme.colors.primary,
+            secondary: parsedTheme.colors.secondary,
+            accent: parsedTheme.colors.accent,
+          });
+        }
+      } catch (error) {
+        console.error('Error loading theme configuration:', error);
+      }
+    }
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!theme) return;
+  const handleGlobalColorChange = (colorKey: keyof ColorPalette, value: string) => {
+    setGlobalColors(prev => ({
+      ...prev,
+      [colorKey]: value
+    }));
 
-    setIsSaving(true);
-    try {
-      const response = await fetch('/api/theme', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(theme),
-      });
+    // Update all sections that use global colors
+    setSections(prev => prev.map(section => {
+      if (!section.useGlobalColors) return section;
 
-      if (!response.ok) {
-        throw new Error('Failed to update theme');
-      }
+      const newColors = {
+        background: colorKey === 'background' ? value : 
+                   (section.colors.background === globalColors.background ? value : section.colors.background),
+        text: colorKey === 'text' ? value : section.colors.text,
+        accent: colorKey === 'accent' ? value : section.colors.accent
+      };
 
-      alert('Theme updated successfully!');
-    } catch (err) {
-      console.error('Error saving theme:', err);
-      alert('Failed to save theme. Please try again.');
-    } finally {
-      setIsSaving(false);
-    }
+      return {
+        ...section,
+        colors: newColors
+      };
+    }));
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
-      </div>
+  const handleSectionColorChange = (sectionId: string, colorKey: string, value: string) => {
+    setSections(prev =>
+      prev.map(section =>
+        section.id === sectionId
+          ? { ...section, colors: { ...section.colors, [colorKey]: value } }
+          : section
+      )
     );
-  }
+  };
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-red-600">{error}</div>
-      </div>
+  const toggleGlobalColors = (sectionId: string) => {
+    setSections(prev =>
+      prev.map(section => {
+        if (section.id !== sectionId) return section;
+        
+        const useGlobalColors = !section.useGlobalColors;
+        return {
+          ...section,
+          useGlobalColors,
+          colors: useGlobalColors ? {
+            background: section.id === 'about' || section.id === 'skills' ? globalColors.lightBg : globalColors.background,
+            text: globalColors.text,
+            accent: globalColors.accent
+          } : section.colors
+        };
+      })
     );
-  }
+  };
 
-  if (!theme) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-red-600">Theme data not found</div>
-      </div>
-    );
-  }
+  const applyColors = () => {
+    document.documentElement.style.setProperty('--color-primary', globalColors.primary);
+    document.documentElement.style.setProperty('--color-secondary', globalColors.secondary);
+    document.documentElement.style.setProperty('--color-accent', globalColors.accent);
+    document.documentElement.style.setProperty('--color-background', globalColors.background);
+    document.documentElement.style.setProperty('--color-text', globalColors.text);
+    document.documentElement.style.setProperty('--color-light-bg', globalColors.lightBg);
+  };
+
+  // Save theme changes
+  const handleSave = () => {
+    // Update theme context
+    updateTheme({
+      colors: {
+        primary: globalColors.primary,
+        secondary: globalColors.secondary,
+        accent: globalColors.accent,
+      },
+      name: name
+    });
+
+    // Update CSS variables for additional colors
+    document.documentElement.style.setProperty('--color-background', globalColors.background);
+    document.documentElement.style.setProperty('--color-text', globalColors.text);
+    document.documentElement.style.setProperty('--color-light-bg', globalColors.lightBg);
+
+    alert('Theme updated successfully!');
+  };
+
+  // Preview Components
+  const PreviewButton = ({ color }: { color: string }) => (
+    <button
+      style={{ backgroundColor: color }}
+      className="px-4 py-2 rounded-md text-white shadow-sm w-full hover:opacity-90 transition-opacity"
+    >
+      Button
+    </button>
+  );
+
+  const PreviewCard = ({ section }: { section: ThemeSection }) => (
+    <div
+      style={{ 
+        backgroundColor: section.useGlobalColors 
+          ? (section.id === 'about' || section.id === 'skills' ? globalColors.lightBg : globalColors.background)
+          : section.colors.background
+      }}
+      className="p-4 rounded-lg shadow-sm"
+    >
+      <h3 
+        style={{ 
+          color: section.useGlobalColors ? globalColors.text : section.colors.text 
+        }} 
+        className="text-lg font-semibold mb-2"
+      >
+        {section.label}
+      </h3>
+      <p 
+        style={{ 
+          color: section.useGlobalColors ? globalColors.text : section.colors.text 
+        }} 
+        className="text-sm mb-3 opacity-80"
+      >
+        This is a preview of how your content will look with these colors.
+      </p>
+      <button
+        style={{ 
+          backgroundColor: section.useGlobalColors ? globalColors.accent : section.colors.accent 
+        }}
+        className="px-3 py-1 rounded text-white text-sm hover:opacity-90 transition-opacity"
+      >
+        Action
+      </button>
+    </div>
+  );
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Customize Theme</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-8">Theme Customization</h1>
       
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Colors</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(theme.colors).map(([key, value]) => (
-              <div key={key}>
-                <label htmlFor={`color-${key}`} className="block text-sm font-medium text-gray-700">
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </label>
-                <div className="mt-1 flex">
-                  <input
-                    type="color"
-                    id={`color-${key}`}
-                    value={value}
-                    onChange={(e) => setTheme({
-                      ...theme,
-                      colors: { ...theme.colors, [key]: e.target.value }
-                    })}
-                    className="h-10 w-10 rounded-l-md border-gray-300"
-                  />
-                  <input
-                    type="text"
-                    value={value}
-                    onChange={(e) => setTheme({
-                      ...theme,
-                      colors: { ...theme.colors, [key]: e.target.value }
-                    })}
-                    className="flex-1 rounded-r-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
-            ))}
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">Global Colors</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Primary Color
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={globalColors.primary}
+                onChange={(e) => setGlobalColors({ ...globalColors, primary: e.target.value })}
+                className="h-10 w-20"
+              />
+              <input
+                type="text"
+                value={globalColors.primary}
+                onChange={(e) => setGlobalColors({ ...globalColors, primary: e.target.value })}
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Secondary Color
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={globalColors.secondary}
+                onChange={(e) => setGlobalColors({ ...globalColors, secondary: e.target.value })}
+                className="h-10 w-20"
+              />
+              <input
+                type="text"
+                value={globalColors.secondary}
+                onChange={(e) => setGlobalColors({ ...globalColors, secondary: e.target.value })}
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Accent Color
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={globalColors.accent}
+                onChange={(e) => setGlobalColors({ ...globalColors, accent: e.target.value })}
+                className="h-10 w-20"
+              />
+              <input
+                type="text"
+                value={globalColors.accent}
+                onChange={(e) => setGlobalColors({ ...globalColors, accent: e.target.value })}
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Background Color
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={globalColors.background}
+                onChange={(e) => setGlobalColors({ ...globalColors, background: e.target.value })}
+                className="h-10 w-20"
+              />
+              <input
+                type="text"
+                value={globalColors.background}
+                onChange={(e) => setGlobalColors({ ...globalColors, background: e.target.value })}
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Text Color
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={globalColors.text}
+                onChange={(e) => setGlobalColors({ ...globalColors, text: e.target.value })}
+                className="h-10 w-20"
+              />
+              <input
+                type="text"
+                value={globalColors.text}
+                onChange={(e) => setGlobalColors({ ...globalColors, text: e.target.value })}
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Light Background Color
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="color"
+                value={globalColors.lightBg}
+                onChange={(e) => setGlobalColors({ ...globalColors, lightBg: e.target.value })}
+                className="h-10 w-20"
+              />
+              <input
+                type="text"
+                value={globalColors.lightBg}
+                onChange={(e) => setGlobalColors({ ...globalColors, lightBg: e.target.value })}
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              />
+            </div>
           </div>
         </div>
+      </div>
 
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Fonts</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(theme.fonts).map(([key, value]) => (
-              <div key={key}>
-                <label htmlFor={`font-${key}`} className="block text-sm font-medium text-gray-700">
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </label>
-                <select
-                  id={`font-${key}`}
-                  value={value}
-                  onChange={(e) => setTheme({
-                    ...theme,
-                    fonts: { ...theme.fonts, [key]: e.target.value }
-                  })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                >
-                  <option value="Inter">Inter</option>
-                  <option value="Roboto">Roboto</option>
-                  <option value="Open Sans">Open Sans</option>
-                  <option value="Montserrat">Montserrat</option>
-                </select>
+      {/* Preview Section */}
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">Preview</h2>
+        <div className="space-y-6">
+          <div style={{ backgroundColor: globalColors.background }} className="p-6 rounded-lg">
+            <h3 style={{ color: globalColors.text }} className="text-lg font-semibold mb-4">Content Preview</h3>
+            <p style={{ color: globalColors.text }} className="mb-4">This is how your content will look with the selected colors.</p>
+            <div className="space-y-4">
+              <button
+                style={{ backgroundColor: globalColors.primary }}
+                className="px-4 py-2 text-white rounded-md hover:opacity-90"
+              >
+                Primary Button
+              </button>
+              <button
+                style={{ backgroundColor: globalColors.secondary }}
+                className="px-4 py-2 text-white rounded-md hover:opacity-90 ml-4"
+              >
+                Secondary Button
+              </button>
+              <div
+                style={{ backgroundColor: globalColors.accent }}
+                className="px-4 py-2 text-white rounded-md inline-block ml-4"
+              >
+                Accent Element
               </div>
-            ))}
+            </div>
           </div>
         </div>
+      </div>
 
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Icons</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(theme.icons).map(([key, value]) => (
-              <div key={key}>
-                <label htmlFor={`icon-${key}`} className="block text-sm font-medium text-gray-700">
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </label>
-                <select
-                  id={`icon-${key}`}
-                  value={value}
-                  onChange={(e) => setTheme({
-                    ...theme,
-                    icons: { ...theme.icons, [key]: e.target.value }
-                  })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                >
-                  <option value="fas fa-arrow-right">Arrow Right</option>
-                  <option value="fas fa-envelope">Envelope</option>
-                  <option value="fas fa-phone">Phone</option>
-                  <option value="fas fa-map-marker-alt">Location</option>
-                  <option value="fab fa-github">GitHub</option>
-                  <option value="fab fa-linkedin">LinkedIn</option>
-                </select>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isSaving}
-            className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 ${
-              isSaving ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </button>
-        </div>
-      </form>
+      <div className="flex justify-end">
+        <button
+          onClick={handleSave}
+          className="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition-colors"
+        >
+          Save Changes
+        </button>
+      </div>
     </div>
   );
 } 

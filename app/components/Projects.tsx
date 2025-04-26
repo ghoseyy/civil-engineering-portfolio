@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { useRefresh } from '../context/RefreshContext';
 
 interface Project {
   id: number;
@@ -12,32 +13,56 @@ interface Project {
   link: string;
 }
 
+interface ProjectsContent {
+  tagStyles: {
+    backgroundColor: string;
+    backgroundOpacity: number;
+    textColor: string;
+  };
+}
+
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [content, setContent] = useState<ProjectsContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { refreshKey } = useRefresh();
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/projects');
-        if (!response.ok) {
-          throw new Error('Failed to fetch projects');
+        const [projectsResponse, contentResponse] = await Promise.all([
+          fetch('/api/projects'),
+          fetch('/api/content')
+        ]);
+
+        if (!projectsResponse.ok || !contentResponse.ok) {
+          throw new Error('Failed to fetch data');
         }
-        const data = await response.json();
-        setProjects(data.projects || []);
+
+        const projectsData = await projectsResponse.json();
+        const contentData = await contentResponse.json();
+
+        setProjects(projectsData.projects || []);
+        setContent(contentData.projects || {
+          tagStyles: {
+            backgroundColor: 'var(--color-primary)',
+            backgroundOpacity: 10,
+            textColor: 'var(--color-primary)'
+          }
+        });
       } catch (err) {
-        console.error('Error fetching projects:', err);
+        console.error('Error fetching data:', err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProjects();
-  }, []);
+    fetchData();
+  }, [refreshKey]);
 
   if (isLoading) {
     return (
-      <section id="projects" className="py-20 bg-gray-50">
+      <section id="projects" className="py-20 bg-[var(--color-background)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-pulse">Loading projects...</div>
@@ -48,11 +73,11 @@ export default function Projects() {
   }
 
   return (
-    <section id="projects" className="py-20 bg-gray-50">
+    <section id="projects" className="py-20 bg-[var(--color-background)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="hero-text text-3xl md:text-4xl font-bold text-gray-800 mb-4">My Projects</h2>
-          <div className="w-20 h-1 bg-purple-600 mx-auto"></div>
+          <h2 className="hero-text text-3xl md:text-4xl font-bold mb-4">My Projects</h2>
+          <div className="w-20 h-1 bg-theme-primary mx-auto"></div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -70,10 +95,29 @@ export default function Projects() {
                   <h3 className="text-white font-bold text-xl">{project.title}</h3>
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">{project.description}</p>
+              <p className="text-[var(--color-text)] mb-4">{project.description}</p>
               <div className="flex flex-wrap gap-2">
                 {project.tags.map((tag, index) => (
-                  <span key={index} className="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">
+                  <span 
+                    key={index} 
+                    style={{
+                      position: 'relative',
+                      color: content?.tagStyles.textColor || 'var(--color-primary)',
+                      isolation: 'isolate'
+                    }}
+                    className="text-xs px-3 py-1 rounded-full"
+                  >
+                    <span
+                      style={{
+                        content: '""',
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundColor: content?.tagStyles.backgroundColor || 'var(--color-primary)',
+                        opacity: (content?.tagStyles.backgroundOpacity || 10) / 100,
+                        borderRadius: '9999px',
+                        zIndex: -1,
+                      }}
+                    />
                     {tag}
                   </span>
                 ))}
@@ -83,7 +127,7 @@ export default function Projects() {
         </div>
         
         <div className="text-center mt-12">
-          <a href="#" className="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium">
+          <a href="#" className="inline-flex items-center text-theme-primary hover:opacity-80 font-medium">
             View All Projects
             <i className="fas fa-arrow-right ml-2"></i>
           </a>

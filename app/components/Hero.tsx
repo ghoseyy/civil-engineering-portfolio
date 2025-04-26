@@ -62,28 +62,29 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-12 md:mb-0">
-            <h1 className="hero-text text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-              {content.title.part1}, <span className="text-purple-600">{content.title.part2}</span>
+            <h1 className="hero-text text-4xl md:text-6xl font-bold mb-6">
+              {content.title.part1}, <span className="text-theme-primary">{content.title.part2}</span>
             </h1>
-            <p className="text-lg text-gray-600 mb-8 whitespace-pre-line">{content.description}</p>
+            <p className="text-lg mb-8 whitespace-pre-line">{content.description}</p>
             <div className="flex space-x-4">
               <a 
                 href={content.cta.primary.link} 
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full font-medium transition-colors shadow-lg"
+                className="bg-theme-primary hover:opacity-90 text-white px-6 py-3 rounded-full font-medium transition-colors shadow-lg"
               >
                 {content.cta.primary.text}
               </a>
               <a 
                 href={content.cta.secondary.link} 
-                className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 px-6 py-3 rounded-full font-medium transition-colors"
+                className="relative border-2 border-theme-primary text-theme-primary px-6 py-3 rounded-full font-medium transition-all overflow-hidden group"
               >
-                {content.cta.secondary.text}
+                <span className="relative z-10">{content.cta.secondary.text}</span>
+                <div className="absolute inset-0 bg-theme-primary opacity-0 group-hover:opacity-10 transition-opacity"></div>
               </a>
             </div>
           </div>
           <div className="md:w-1/2 flex justify-center">
             <div className="relative w-64 h-64 md:w-80 md:h-80">
-              <div className="absolute inset-0 bg-purple-200 rounded-full opacity-20 blur-xl"></div>
+              <div className="absolute inset-0 bg-theme-primary rounded-full opacity-20 blur-xl"></div>
               <div className="relative card-3d floating">
                 <Image
                   src={content.image}

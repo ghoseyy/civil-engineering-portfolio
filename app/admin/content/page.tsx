@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRefresh } from '../../context/RefreshContext';
 
 interface Content {
   hero: {
@@ -23,6 +24,7 @@ interface Content {
   };
   about: {
     title: string;
+    name: string;
     content: string;
     image: string;
     education: string;
@@ -30,6 +32,18 @@ interface Content {
     interests: string;
     experience: string;
     subtitle: string;
+    iconStyles?: {
+      backgroundColor: string;
+      backgroundOpacity: number;
+      iconColor: string;
+    };
+  };
+  projects: {
+    tagStyles: {
+      backgroundColor: string;
+      backgroundOpacity: number;
+      textColor: string;
+    };
   };
   skills: {
     title: string;
@@ -91,7 +105,8 @@ export default function ContentAdmin() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeSection, setActiveSection] = useState<'hero' | 'about' | 'contact' | 'skills' | 'footer'>('hero');
+  const [activeSection, setActiveSection] = useState<'hero' | 'about' | 'contact' | 'skills' | 'footer' | 'projects'>('hero');
+  const { triggerRefresh } = useRefresh();
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -132,6 +147,7 @@ export default function ContentAdmin() {
         throw new Error('Failed to update content');
       }
 
+      triggerRefresh();
       alert('Content updated successfully!');
     } catch (err) {
       console.error('Error saving content:', err);
@@ -172,7 +188,7 @@ export default function ContentAdmin() {
       <div className="mb-6">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8">
-            {(['hero', 'about', 'contact', 'skills', 'footer'] as const).map((section) => (
+            {(['hero', 'about', 'contact', 'skills', 'footer', 'projects'] as const).map((section) => (
               <button
                 key={section}
                 onClick={() => setActiveSection(section)}
@@ -362,428 +378,325 @@ export default function ContentAdmin() {
         )}
 
         {activeSection === 'about' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label htmlFor="about-title" className="block text-sm font-medium text-gray-700">
-                Title
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Image
               </label>
               <input
                 type="text"
-                id="about-title"
-                value={content.about.title}
+                value={content.about.image}
                 onChange={(e) => setContent({
                   ...content,
-                  about: { ...content.about, title: e.target.value }
+                  about: { ...content.about, image: e.target.value }
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter image URL"
               />
             </div>
+
             <div>
-              <label htmlFor="about-subtitle" className="block text-sm font-medium text-gray-700">
-                Subtitle
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Name
               </label>
               <input
                 type="text"
-                id="about-subtitle"
+                value={content.about.name}
+                onChange={(e) => setContent({
+                  ...content,
+                  about: { ...content.about, name: e.target.value }
+                })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter your name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Role/Title
+              </label>
+              <input
+                type="text"
                 value={content.about.subtitle}
                 onChange={(e) => setContent({
                   ...content,
                   about: { ...content.about, subtitle: e.target.value }
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                placeholder="e.g., Civil Engineering Student | Sustainable Design Enthusiast"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter your role or title"
               />
             </div>
+
             <div>
-              <label htmlFor="about-content" className="block text-sm font-medium text-gray-700">
-                Content
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                About Content
               </label>
               <textarea
-                id="about-content"
                 value={content.about.content}
                 onChange={(e) => setContent({
                   ...content,
                   about: { ...content.about, content: e.target.value }
                 })}
                 rows={6}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                placeholder="Enter your about content. Use line breaks for paragraphs."
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter your about content"
               />
             </div>
+
             <div>
-              <label htmlFor="about-image" className="block text-sm font-medium text-gray-700">
-                Image URL
-              </label>
-              <input
-                type="text"
-                id="about-image"
-                value={content.about.image}
-                onChange={(e) => setContent({
-                  ...content,
-                  about: { ...content.about, image: e.target.value }
-                })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-              />
-            </div>
-            <div>
-              <label htmlFor="about-education" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Education
               </label>
               <input
                 type="text"
-                id="about-education"
                 value={content.about.education}
                 onChange={(e) => setContent({
                   ...content,
                   about: { ...content.about, education: e.target.value }
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter your education"
               />
             </div>
+
             <div>
-              <label htmlFor="about-location" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Location
               </label>
               <input
                 type="text"
-                id="about-location"
                 value={content.about.location}
                 onChange={(e) => setContent({
                   ...content,
                   about: { ...content.about, location: e.target.value }
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter your location"
               />
             </div>
+
             <div>
-              <label htmlFor="about-interests" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Interests
               </label>
               <input
                 type="text"
-                id="about-interests"
                 value={content.about.interests}
                 onChange={(e) => setContent({
                   ...content,
                   about: { ...content.about, interests: e.target.value }
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter your interests"
               />
             </div>
+
             <div>
-              <label htmlFor="about-experience" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Experience
               </label>
               <input
                 type="text"
-                id="about-experience"
                 value={content.about.experience}
                 onChange={(e) => setContent({
                   ...content,
                   about: { ...content.about, experience: e.target.value }
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                placeholder="Enter your experience"
               />
+            </div>
+
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Icon Styles</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Background Color
+                  </label>
+                  <input
+                    type="text"
+                    value={content.about.iconStyles?.backgroundColor || 'var(--color-primary)'}
+                    onChange={(e) => setContent({
+                      ...content,
+                      about: {
+                        ...content.about,
+                        iconStyles: {
+                          ...content.about.iconStyles,
+                          backgroundColor: e.target.value
+                        }
+                      }
+                    })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    placeholder="Enter color value (e.g., var(--color-primary))"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Background Opacity (0-100)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={content.about.iconStyles?.backgroundOpacity || 10}
+                    onChange={(e) => setContent({
+                      ...content,
+                      about: {
+                        ...content.about,
+                        iconStyles: {
+                          ...content.about.iconStyles,
+                          backgroundOpacity: Number(e.target.value)
+                        }
+                      }
+                    })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Icon Color
+                  </label>
+                  <input
+                    type="text"
+                    value={content.about.iconStyles?.iconColor || 'var(--color-primary)'}
+                    onChange={(e) => setContent({
+                      ...content,
+                      about: {
+                        ...content.about,
+                        iconStyles: {
+                          ...content.about.iconStyles,
+                          iconColor: e.target.value
+                        }
+                      }
+                    })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    placeholder="Enter color value (e.g., var(--color-primary))"
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+                  <div className="p-4 border rounded-lg flex items-center gap-4">
+                    <div className="relative p-2 rounded-full" style={{ isolation: 'isolate' }}>
+                      <span
+                        style={{
+                          content: '""',
+                          position: 'absolute',
+                          inset: 0,
+                          backgroundColor: content.about.iconStyles?.backgroundColor || 'var(--color-primary)',
+                          opacity: (content.about.iconStyles?.backgroundOpacity || 10) / 100,
+                          borderRadius: '9999px',
+                          zIndex: -1,
+                        }}
+                      />
+                      <i 
+                        className="fas fa-graduation-cap"
+                        style={{ color: content.about.iconStyles?.iconColor || 'var(--color-primary)' }}
+                      ></i>
+                    </div>
+                    <span className="text-sm text-gray-600">Sample Icon</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {activeSection === 'contact' && (
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="contact-title" className="block text-sm font-medium text-gray-700">
-                Title
-              </label>
-              <input
-                type="text"
-                id="contact-title"
-                value={content.contact.title}
-                onChange={(e) => setContent({
-                  ...content,
-                  contact: { ...content.contact, title: e.target.value }
-                })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-              />
-            </div>
-            <div>
-              <label htmlFor="contact-subtitle" className="block text-sm font-medium text-gray-700">
-                Subtitle
-              </label>
-              <input
-                type="text"
-                id="contact-subtitle"
-                value={content.contact.subtitle}
-                onChange={(e) => setContent({
-                  ...content,
-                  contact: { ...content.contact, subtitle: e.target.value }
-                })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                placeholder="e.g., Let's Build Something Together"
-              />
-            </div>
-            <div>
-              <label htmlFor="contact-description" className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                id="contact-description"
-                value={content.contact.description}
-                onChange={(e) => setContent({
-                  ...content,
-                  contact: { ...content.contact, description: e.target.value }
-                })}
-                rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                placeholder="Enter your contact description"
-              />
-            </div>
-
-            <div className="border-t border-gray-200 pt-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Contact Items</h3>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newItems = [...content.contact.contactItems];
-                    newItems.push({
-                      icon: 'fas fa-info',
-                      label: 'New Item',
-                      value: ''
-                    });
-                    setContent({
-                      ...content,
-                      contact: {
-                        ...content.contact,
-                        contactItems: newItems
-                      }
-                    });
-                  }}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                >
-                  Add Contact Item
-                </button>
-              </div>
-
+        {activeSection === 'projects' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Project Tag Styles</h3>
               <div className="space-y-4">
-                {content.contact.contactItems.map((item, index) => (
-                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Icon Class</label>
-                        <div className="mt-1 flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={item.icon}
-                            onChange={(e) => {
-                              const newItems = [...content.contact.contactItems];
-                              newItems[index] = { ...item, icon: e.target.value };
-                              setContent({
-                                ...content,
-                                contact: {
-                                  ...content.contact,
-                                  contactItems: newItems
-                                }
-                              });
-                            }}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                          />
-                          <i className={`${item.icon} text-xl text-purple-600`}></i>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Label</label>
-                        <input
-                          type="text"
-                          value={item.label}
-                          onChange={(e) => {
-                            const newItems = [...content.contact.contactItems];
-                            newItems[index] = { ...item, label: e.target.value };
-                            setContent({
-                              ...content,
-                              contact: {
-                                ...content.contact,
-                                contactItems: newItems
-                              }
-                            });
-                          }}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Value</label>
-                        <div className="mt-1 flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={item.value}
-                            onChange={(e) => {
-                              const newItems = [...content.contact.contactItems];
-                              newItems[index] = { ...item, value: e.target.value };
-                              setContent({
-                                ...content,
-                                contact: {
-                                  ...content.contact,
-                                  contactItems: newItems
-                                }
-                              });
-                            }}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newItems = content.contact.contactItems.filter((_, i) => i !== index);
-                              setContent({
-                                ...content,
-                                contact: {
-                                  ...content.contact,
-                                  contactItems: newItems
-                                }
-                              });
-                            }}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <i className="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="border-t border-gray-200 pt-4 mt-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Social Links</h3>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newLinks = [...content.contact.socialLinks];
-                    newLinks.push({
-                      name: 'New Social',
-                      icon: 'fab fa-link',
-                      url: '',
-                      color: 'bg-gray-600'
-                    });
-                    setContent({
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Background Color
+                  </label>
+                  <input
+                    type="text"
+                    value={content.projects?.tagStyles?.backgroundColor || 'var(--color-primary)'}
+                    onChange={(e) => setContent({
                       ...content,
-                      contact: {
-                        ...content.contact,
-                        socialLinks: newLinks
+                      projects: {
+                        ...content.projects,
+                        tagStyles: {
+                          ...content.projects?.tagStyles,
+                          backgroundColor: e.target.value
+                        }
                       }
-                    });
-                  }}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                >
-                  Add Social Link
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {content.contact.socialLinks.map((link, index) => (
-                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <input
-                          type="text"
-                          value={link.name}
-                          onChange={(e) => {
-                            const newLinks = [...content.contact.socialLinks];
-                            newLinks[index] = { ...link, name: e.target.value };
-                            setContent({
-                              ...content,
-                              contact: {
-                                ...content.contact,
-                                socialLinks: newLinks
-                              }
-                            });
-                          }}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Icon Class</label>
-                        <div className="mt-1 flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={link.icon}
-                            onChange={(e) => {
-                              const newLinks = [...content.contact.socialLinks];
-                              newLinks[index] = { ...link, icon: e.target.value };
-                              setContent({
-                                ...content,
-                                contact: {
-                                  ...content.contact,
-                                  socialLinks: newLinks
-                                }
-                              });
-                            }}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                          />
-                          <i className={`${link.icon} text-xl text-purple-600`}></i>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">URL</label>
-                        <input
-                          type="url"
-                          value={link.url}
-                          onChange={(e) => {
-                            const newLinks = [...content.contact.socialLinks];
-                            newLinks[index] = { ...link, url: e.target.value };
-                            setContent({
-                              ...content,
-                              contact: {
-                                ...content.contact,
-                                socialLinks: newLinks
-                              }
-                            });
-                          }}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Color Class</label>
-                        <div className="mt-1 flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={link.color}
-                            onChange={(e) => {
-                              const newLinks = [...content.contact.socialLinks];
-                              newLinks[index] = { ...link, color: e.target.value };
-                              setContent({
-                                ...content,
-                                contact: {
-                                  ...content.contact,
-                                  socialLinks: newLinks
-                                }
-                              });
-                            }}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                          />
-                          <div className={`w-6 h-6 rounded-full ${link.color}`}></div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newLinks = content.contact.socialLinks.filter((_, i) => i !== index);
-                              setContent({
-                                ...content,
-                                contact: {
-                                  ...content.contact,
-                                  socialLinks: newLinks
-                                }
-                              });
-                            }}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <i className="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                    })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    placeholder="Enter color value (e.g., var(--color-primary))"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Background Opacity (0-100)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={content.projects?.tagStyles?.backgroundOpacity || 10}
+                    onChange={(e) => setContent({
+                      ...content,
+                      projects: {
+                        ...content.projects,
+                        tagStyles: {
+                          ...content.projects?.tagStyles,
+                          backgroundOpacity: Number(e.target.value)
+                        }
+                      }
+                    })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Text Color
+                  </label>
+                  <input
+                    type="text"
+                    value={content.projects?.tagStyles?.textColor || 'var(--color-primary)'}
+                    onChange={(e) => setContent({
+                      ...content,
+                      projects: {
+                        ...content.projects,
+                        tagStyles: {
+                          ...content.projects?.tagStyles,
+                          textColor: e.target.value
+                        }
+                      }
+                    })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
+                    placeholder="Enter color value (e.g., var(--color-primary))"
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+                  <div className="p-4 border rounded-lg">
+                    <span
+                      style={{
+                        position: 'relative',
+                        color: content.projects?.tagStyles?.textColor || 'var(--color-primary)',
+                        isolation: 'isolate'
+                      }}
+                      className="inline-block px-3 py-1 rounded-full text-xs"
+                    >
+                      <span
+                        style={{
+                          content: '""',
+                          position: 'absolute',
+                          inset: 0,
+                          backgroundColor: content.projects?.tagStyles?.backgroundColor || 'var(--color-primary)',
+                          opacity: (content.projects?.tagStyles?.backgroundOpacity || 10) / 100,
+                          borderRadius: '9999px',
+                          zIndex: -1,
+                        }}
+                      />
+                      Sample Tag
+                    </span>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1133,6 +1046,307 @@ export default function ContentAdmin() {
           </div>
         )}
 
+        {activeSection === 'contact' && (
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="contact-title" className="block text-sm font-medium text-gray-700">
+                Title
+              </label>
+              <input
+                type="text"
+                id="contact-title"
+                value={content.contact.title}
+                onChange={(e) => setContent({
+                  ...content,
+                  contact: { ...content.contact, title: e.target.value }
+                })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="contact-subtitle" className="block text-sm font-medium text-gray-700">
+                Subtitle
+              </label>
+              <input
+                type="text"
+                id="contact-subtitle"
+                value={content.contact.subtitle}
+                onChange={(e) => setContent({
+                  ...content,
+                  contact: { ...content.contact, subtitle: e.target.value }
+                })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                placeholder="e.g., Let's Build Something Together"
+              />
+            </div>
+            <div>
+              <label htmlFor="contact-description" className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <textarea
+                id="contact-description"
+                value={content.contact.description}
+                onChange={(e) => setContent({
+                  ...content,
+                  contact: { ...content.contact, description: e.target.value }
+                })}
+                rows={3}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                placeholder="Enter your contact description"
+              />
+            </div>
+
+            <div className="border-t border-gray-200 pt-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Contact Items</h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newItems = [...content.contact.contactItems];
+                    newItems.push({
+                      icon: 'fas fa-info',
+                      label: 'New Item',
+                      value: ''
+                    });
+                    setContent({
+                      ...content,
+                      contact: {
+                        ...content.contact,
+                        contactItems: newItems
+                      }
+                    });
+                  }}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                >
+                  Add Contact Item
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {content.contact.contactItems.map((item, index) => (
+                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Icon Class</label>
+                        <div className="mt-1 flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={item.icon}
+                            onChange={(e) => {
+                              const newItems = [...content.contact.contactItems];
+                              newItems[index] = { ...item, icon: e.target.value };
+                              setContent({
+                                ...content,
+                                contact: {
+                                  ...content.contact,
+                                  contactItems: newItems
+                                }
+                              });
+                            }}
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                          />
+                          <i className={`${item.icon} text-xl text-purple-600`}></i>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Label</label>
+                        <input
+                          type="text"
+                          value={item.label}
+                          onChange={(e) => {
+                            const newItems = [...content.contact.contactItems];
+                            newItems[index] = { ...item, label: e.target.value };
+                            setContent({
+                              ...content,
+                              contact: {
+                                ...content.contact,
+                                contactItems: newItems
+                              }
+                            });
+                          }}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Value</label>
+                        <div className="mt-1 flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={item.value}
+                            onChange={(e) => {
+                              const newItems = [...content.contact.contactItems];
+                              newItems[index] = { ...item, value: e.target.value };
+                              setContent({
+                                ...content,
+                                contact: {
+                                  ...content.contact,
+                                  contactItems: newItems
+                                }
+                              });
+                            }}
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newItems = content.contact.contactItems.filter((_, i) => i !== index);
+                              setContent({
+                                ...content,
+                                contact: {
+                                  ...content.contact,
+                                  contactItems: newItems
+                                }
+                              });
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-gray-200 pt-4 mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Social Links</h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newLinks = [...content.contact.socialLinks];
+                    newLinks.push({
+                      name: 'New Social',
+                      icon: 'fab fa-link',
+                      url: '',
+                      color: 'bg-gray-600'
+                    });
+                    setContent({
+                      ...content,
+                      contact: {
+                        ...content.contact,
+                        socialLinks: newLinks
+                      }
+                    });
+                  }}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                >
+                  Add Social Link
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {content.contact.socialLinks.map((link, index) => (
+                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Name</label>
+                        <input
+                          type="text"
+                          value={link.name}
+                          onChange={(e) => {
+                            const newLinks = [...content.contact.socialLinks];
+                            newLinks[index] = { ...link, name: e.target.value };
+                            setContent({
+                              ...content,
+                              contact: {
+                                ...content.contact,
+                                socialLinks: newLinks
+                              }
+                            });
+                          }}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Icon Class</label>
+                        <div className="mt-1 flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={link.icon}
+                            onChange={(e) => {
+                              const newLinks = [...content.contact.socialLinks];
+                              newLinks[index] = { ...link, icon: e.target.value };
+                              setContent({
+                                ...content,
+                                contact: {
+                                  ...content.contact,
+                                  socialLinks: newLinks
+                                }
+                              });
+                            }}
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                          />
+                          <i className={`${link.icon} text-xl text-purple-600`}></i>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">URL</label>
+                        <input
+                          type="url"
+                          value={link.url}
+                          onChange={(e) => {
+                            const newLinks = [...content.contact.socialLinks];
+                            newLinks[index] = { ...link, url: e.target.value };
+                            setContent({
+                              ...content,
+                              contact: {
+                                ...content.contact,
+                                socialLinks: newLinks
+                              }
+                            });
+                          }}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Color Class</label>
+                        <div className="mt-1 flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={link.color}
+                            onChange={(e) => {
+                              const newLinks = [...content.contact.socialLinks];
+                              newLinks[index] = { ...link, color: e.target.value };
+                              setContent({
+                                ...content,
+                                contact: {
+                                  ...content.contact,
+                                  socialLinks: newLinks
+                                }
+                              });
+                            }}
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                          />
+                          <div className={`w-6 h-6 rounded-full ${link.color}`}></div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newLinks = content.contact.socialLinks.filter((_, i) => i !== index);
+                              setContent({
+                                ...content,
+                                contact: {
+                                  ...content.contact,
+                                  socialLinks: newLinks
+                                }
+                              });
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeSection === 'footer' && (
           <div className="space-y-8">
             <div className="space-y-4">
@@ -1345,9 +1559,7 @@ export default function ContentAdmin() {
           <button
             type="submit"
             disabled={isSaving}
-            className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 ${
-              isSaving ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
