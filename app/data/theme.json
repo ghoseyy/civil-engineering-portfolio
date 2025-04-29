@@ -1,0 +1,25 @@
+{
+  "colors": {
+    "primary": "#9333EA",
+    "secondary": "#4B5563",
+    "background": "#F9FAFB",
+    "text": "#ff0000",
+    "accent": "#EC4899"
+  },
+  "fonts": {
+    "heading": "Inter",
+    "body": "Roboto"
+  },
+  "spacing": {
+    "sectionPadding": "py-20",
+    "containerPadding": "px-4 sm:px-6 lg:px-8"
+  },
+  "icons": {
+    "arrow": "fas fa-arrow-right",
+    "email": "fas fa-envelope",
+    "phone": "fas fa-phone",
+    "location": "fas fa-map-marker-alt",
+    "github": "fab fa-github",
+    "linkedin": "fab fa-linkedin"
+  }
+}

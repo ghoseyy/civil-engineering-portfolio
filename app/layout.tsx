@@ -1,9 +1,15 @@
-import './globals.css';
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ThemeProvider } from './context/ThemeContext';
+import { RefreshProvider } from './context/RefreshContext';
+import RefreshButton from './components/RefreshButton';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Sandhya Thapa | Civil Engineering Portfolio',
-  description: 'Civil Engineering Student Portfolio showcasing projects and skills',
+  description: 'Portfolio website showcasing civil engineering projects and skills',
 };
 
 export default function RootLayout({
@@ -17,12 +23,16 @@ export default function RootLayout({
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
         />
       </head>
-      <body>{children}</body>
+      <body className={inter.className}>
+        <ThemeProvider>
+          <RefreshProvider>
+            {children}
+            <RefreshButton />
+          </RefreshProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 } 

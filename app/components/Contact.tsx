@@ -1,62 +1,109 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useRefresh } from '../context/RefreshContext';
+
+interface ContactItem {
+  icon: string;
+  label: string;
+  value: string;
+}
+
+interface SocialLink {
+  name: string;
+  icon: string;
+  url: string;
+  color: string;
+}
+
+interface ContactContent {
+  title: string;
+  subtitle: string;
+  description: string;
+  email: string;
+  phone: string;
+  location: string;
+  contactItems: ContactItem[];
+  socialLinks: SocialLink[];
+}
+
 export default function Contact() {
+  const [content, setContent] = useState<ContactContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { refreshKey } = useRefresh();
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch('/api/content');
+        if (!response.ok) {
+          throw new Error('Failed to fetch content');
+        }
+        const data = await response.json();
+        setContent(data.contact);
+      } catch (err) {
+        console.error('Error fetching contact content:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, [refreshKey]);
+
+  if (isLoading || !content) {
+    return (
+      <section id="contact" className="py-20 gradient-bg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse">Loading...</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="contact" className="py-20 gradient-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="hero-text text-3xl md:text-4xl font-bold text-gray-800 mb-4">Get In Touch</h2>
+          <h2 className="hero-text text-3xl md:text-4xl font-bold text-gray-800 mb-4">{content.title}</h2>
           <div className="w-20 h-1 bg-purple-600 mx-auto"></div>
         </div>
         
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
             <div className="p-8 md:p-12">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">Let's Build Something Together</h3>
-              <p className="text-gray-600 mb-8">Whether you have a project in mind or just want to chat about civil engineering, I'd love to hear from you!</p>
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">{content.subtitle}</h3>
+              <p className="text-gray-600 mb-8">{content.description}</p>
               
               <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="bg-purple-100 p-3 rounded-full mr-4">
-                    <i className="fas fa-envelope text-purple-600"></i>
+                {content.contactItems.map((item, index) => (
+                  <div key={index} className="flex items-start">
+                    <div className="bg-purple-100 p-3 rounded-full mr-4">
+                      <i className={`${item.icon} text-purple-600`}></i>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-700">{item.label}</h4>
+                      <p className="text-gray-600">{item.value}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-medium text-gray-700">Email</h4>
-                    <p className="text-gray-600">sandhya7thapa707@gmail.com</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className="bg-purple-100 p-3 rounded-full mr-4">
-                    <i className="fas fa-phone-alt text-purple-600"></i>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-700">Phone</h4>
-                    <p className="text-gray-600">(123) 456-7890</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <div className="bg-purple-100 p-3 rounded-full mr-4">
-                    <i className="fas fa-map-marker-alt text-purple-600"></i>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-700">Location</h4>
-                    <p className="text-gray-600">Pokhara, kaski</p>
-                  </div>
-                </div>
+                ))}
               </div>
-              
-              <div className="mt-8 flex space-x-4">
-                <a href="#" className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors">
-                  <i className="fab fa-linkedin-in"></i>
-                </a>
-                <a href="#" className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors">
-                  <i className="fab fa-github"></i>
-                </a>
-                <a href="#" className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors">
-                  <i className="fab fa-instagram"></i>
-                </a>
+
+              <div className="mt-8">
+                <div className="flex space-x-4">
+                  {content.socialLinks.map((link, index) => (
+                    <a
+                      key={index}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${link.color} hover:opacity-90 text-white p-3 rounded-full transition-all transform hover:scale-110`}
+                      title={link.name}
+                    >
+                      <i className={`${link.icon} text-lg`}></i>
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
             
@@ -64,12 +111,12 @@ export default function Contact() {
               <form className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                  <input type="text" id="name" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all" placeholder="oops hello !" />
+                  <input type="text" id="name" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all" placeholder="John Doe" />
                 </div>
                 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                  <input type="email" id="email" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all" placeholder="mail@example.com" />
+                  <input type="email" id="email" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all" placeholder="john@example.com" />
                 </div>
                 
                 <div>

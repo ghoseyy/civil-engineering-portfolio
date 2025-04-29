@@ -1,110 +1,124 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useRefresh } from '../context/RefreshContext';
+
+interface Skill {
+  name: string;
+  percentage: number;
+}
+
+interface TechnicalCategory {
+  name: string;
+  icon: string;
+  skills: Skill[];
+}
+
+interface SkillCategory {
+  name: string;
+  icon: string;
+  color: string;
+}
+
+interface SkillContent {
+  title: string;
+  skillCategories: SkillCategory[];
+  technicalProficiencies: {
+    title: string;
+    categories: TechnicalCategory[];
+  };
+}
+
 export default function Skills() {
+  const [content, setContent] = useState<SkillContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { refreshKey } = useRefresh();
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch('/api/content');
+        if (!response.ok) {
+          throw new Error('Failed to fetch content');
+        }
+        const data = await response.json();
+        setContent(data.skills);
+      } catch (err) {
+        console.error('Error fetching skills content:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, [refreshKey]);
+
+  if (isLoading || !content) {
+    return (
+      <section id="skills" className="py-20 bg-[var(--color-light-bg)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse">Loading...</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section id="skills" className="py-20 bg-white">
+    <section id="skills" className="py-20 bg-[var(--color-light-bg)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="hero-text text-3xl md:text-4xl font-bold text-gray-800 mb-4">My Skills</h2>
-          <div className="w-20 h-1 bg-purple-600 mx-auto"></div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.title}</h2>
+          <div className="w-20 h-1 bg-theme-primary mx-auto"></div>
         </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {/* Skill 1 */}
-          <div className="skill-bubble w-32 h-32 mx-auto" data-tilt>
-            <div className="text-center p-4">
-              <div className="text-purple-600 text-4xl mb-2">
-                <i className="fas fa-drafting-compass"></i>
+
+        {/* Skill Categories */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+          {content.skillCategories.map((category, index) => (
+            <div key={index} className="text-center">
+              <div className="w-32 h-32 mx-auto bg-[var(--color-background)] rounded-full shadow-lg flex items-center justify-center transform transition-transform hover:scale-105 group">
+                <div className="text-center p-4">
+                  <i className={`${category.icon} text-theme-primary text-3xl mb-2 group-hover:scale-110 transition-transform`}></i>
+                  <h3 className="text-sm font-semibold mt-2">{category.name}</h3>
+                </div>
               </div>
-              <h3 className="font-bold text-gray-800">Structural Design</h3>
             </div>
-          </div>
-          
-          {/* Skill 2 */}
-          <div className="skill-bubble w-32 h-32 mx-auto" data-tilt>
-            <div className="text-center p-4">
-              <div className="text-purple-600 text-4xl mb-2">
-                <i className="fas fa-leaf"></i>
-              </div>
-              <h3 className="font-bold text-gray-800">Sustainable Design</h3>
-            </div>
-          </div>
-          
-          {/* Skill 3 */}
-          <div className="skill-bubble w-32 h-32 mx-auto" data-tilt>
-            <div className="text-center p-4">
-              <div className="text-purple-600 text-4xl mb-2">
-                <i className="fas fa-cube"></i>
-              </div>
-              <h3 className="font-bold text-gray-800">3D Modeling</h3>
-            </div>
-          </div>
-          
-          {/* Skill 4 */}
-          <div className="skill-bubble w-32 h-32 mx-auto" data-tilt>
-            <div className="text-center p-4">
-              <div className="text-purple-600 text-4xl mb-2">
-                <i className="fas fa-chart-line"></i>
-              </div>
-              <h3 className="font-bold text-gray-800">Structural Analysis</h3>
-            </div>
-          </div>
+          ))}
         </div>
-        
-        <div className="mt-12 bg-gray-50 rounded-xl p-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-6">Technical Proficiencies</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3 flex items-center">
-                <i className="fas fa-cog text-purple-600 mr-2"></i> Design Software
-              </h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">AutoCAD</span>
-                  <div className="w-24 h-2 bg-gray-200 rounded-full">
-                    <div className="h-full bg-purple-600 rounded-full" style={{ width: '90%' }}></div>
-                  </div>
+
+        {/* Technical Proficiencies */}
+        <div className="bg-[var(--color-background)] rounded-xl p-8 mt-12">
+          <h3 className="text-2xl font-bold mb-8 pl-4">
+            {content.technicalProficiencies.title}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+            {content.technicalProficiencies.categories.map((category, index) => (
+              <div key={index} className="space-y-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <i className={category.icon + " text-theme-primary text-2xl"}></i>
+                  <h3 className="text-xl font-semibold">{category.name}</h3>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Revit</span>
-                  <div className="w-24 h-2 bg-gray-200 rounded-full">
-                    <div className="h-full bg-purple-600 rounded-full" style={{ width: '85%' }}></div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">SketchUp</span>
-                  <div className="w-24 h-2 bg-gray-200 rounded-full">
-                    <div className="h-full bg-purple-600 rounded-full" style={{ width: '80%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3 flex items-center">
-                <i className="fas fa-calculator text-purple-600 mr-2"></i> Analysis Tools
-              </h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">ETABS</span>
-                  <div className="w-24 h-2 bg-gray-200 rounded-full">
-                    <div className="h-full bg-purple-600 rounded-full" style={{ width: '75%' }}></div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">SAP2000</span>
-                  <div className="w-24 h-2 bg-gray-200 rounded-full">
-                    <div className="h-full bg-purple-600 rounded-full" style={{ width: '70%' }}></div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">STAAD.Pro</span>
-                  <div className="w-24 h-2 bg-gray-200 rounded-full">
-                    <div className="h-full bg-purple-600 rounded-full" style={{ width: '65%' }}></div>
-                  </div>
+                <div className="space-y-4">
+                  {category.skills.map((skill, skillIndex) => (
+                    <div key={skillIndex} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[var(--color-text)] font-medium">{skill.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-[var(--color-text)] opacity-75">{skill.percentage}%</span>
+                          <div className="w-48 h-2 bg-[var(--color-light-bg)] rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-theme-primary rounded-full transition-all duration-300"
+                              style={{
+                                width: `${skill.percentage}%`
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

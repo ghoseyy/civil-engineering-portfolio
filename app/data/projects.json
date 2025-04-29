@@ -1,0 +1,40 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "Sustainable Housing Complex",
+      "description": "Designed a net-zero energy residential complex incorporating passive solar design and rainwater harvesting systems.",
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "tags": [
+        "Sustainable Design",
+        "Structural Analysis",
+        "AutoCAD"
+      ],
+      "link": "https://project1.com"
+    },
+    {
+      "id": 2,
+      "title": "Pedestrian Suspension Bridge",
+      "description": "Developed a lightweight suspension bridge design connecting two university campuses over a river.",
+      "image": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "tags": [
+        "Bridge Design",
+        "Structural Analysis",
+        "Revit"
+      ],
+      "link": "https://project2.com"
+    },
+    {
+      "id": 3,
+      "title": "Urban Green Space Design",
+      "description": "Created a sustainable urban park design with permeable paving and native plant landscaping.",
+      "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "tags": [
+        "Landscape Design",
+        "Sustainability",
+        "SketchUp"
+      ],
+      "link": "https://project3.com"
+    }
+  ]
+}
