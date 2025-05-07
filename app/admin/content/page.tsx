@@ -32,7 +32,7 @@ interface Content {
     interests: string;
     experience: string;
     subtitle: string;
-    iconStyles?: {
+    iconStyles: {
       backgroundColor: string;
       backgroundOpacity: number;
       iconColor: string;
